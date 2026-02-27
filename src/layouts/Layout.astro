@@ -22,17 +22,19 @@ const { title, description, footer = true } = Astro.props;
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content={config.head.brand} />
-    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-TileColor" content="#F2F1ED" />
     <meta
       name="viewport"
       content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <meta name="description" content={description ?? config.head.description} />
+    <meta name="theme-color" content="#F2F1ED" />
     <link rel="icon" href="/favicon.ico" />
     <title>{[config.head.brand, title].reverse().join(" | ")}</title>
   </head>
   <body class="text-text bg-bg">
-    <header class="flex justify-between items-center p-2 gap-2 h-10">
+    <!-- Daygram-style header -->
+    <header class="flex justify-between items-center px-4 py-3 gap-2 min-h-12">
       <a href="/" class="text-button text-lg" aria-label="homepage">
         <div class="i-ri:menu-4-fill"></div>
       </a>
@@ -52,12 +54,32 @@ const { title, description, footer = true } = Astro.props;
     padding: 0 16px;
     gap: 12px;
     justify-content: center;
+    padding-bottom: 80px; /* Space for bottom nav */
   }
   .content {
-    /* width: 100%; */
     max-width: 720px;
-    /* padding: 0 24px; */
     overflow-x: hidden;
     flex: 1 1 0;
+  }
+
+  /* Daygram-style brand banner */
+  .brand-banner {
+    width: 100%;
+    min-height: 120px;
+    background-color: #504F4B;
+    color: #F2F1ED;
+    font-weight: bold;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 2px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .brand-banner {
+      background-color: #E8E6E1;
+      color: #2A2927;
+    }
   }
 </style>
