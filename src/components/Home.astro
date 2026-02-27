@@ -11,46 +11,91 @@ interface Props {
 }
 
 const { posts, page, pages } = Astro.props;
+
+// Helper function to get day of week
+function getDayOfWeek(dateStr: Date): { day: string; isSunday: boolean } {
+  const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const date = new Date(dateStr);
+  const dayIndex = date.getDay();
+  return {
+    day: days[dayIndex],
+    isSunday: dayIndex === 0
+  };
+}
+
+// Helper function to get day number
+function getDayNumber(dateStr: Date): string {
+  const date = new Date(dateStr);
+  return date.getDate().toString();
+}
+
+// Helper function to get month name
+function getMonthName(dateStr: Date): string {
+  const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
+                   'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+  const date = new Date(dateStr);
+  return months[date.getMonth()];
+}
+
+// Helper function to get year
+function getYear(dateStr: Date): string {
+  const date = new Date(dateStr);
+  return date.getFullYear().toString();
+}
 ---
 
 <script>
   import { mount } from "../components/RelativeTime";
-
   mount("data-acc-time");
 </script>
+
 <Layout title={config.head.title}>
-  <div class="w-full h-40 bg-black text-white font-bold text-3xl flex items-center justify-center">
+  <!-- Daygram-style brand banner -->
+  <div class="brand-banner">
     {config.head.brand}
   </div>
+  
   <main>
     <div class="content">
       {
-        posts.map((item) => (
-          <>
-            <div class="pt-8 pb-2">
-              <a href={`/post/${item.id}`} class="px-4 pb-4 flex justify-between items-center group">
-                <div class="flex flex-col">
-                  <h1 class="page-title w-[fit-content] text-lg transition-all font-semibold group-hover:underline">
-                    {item.title}
-                  </h1>
-                  <p class="text-text text-opacity-60 text-sm">{item.intro}</p>
-                </div>
-                {item.cover && <img class="w-16 h-16 rounded object-cover" src={item.cover.src} alt={item.cover.alt} />}
-              </a>
-              <div class="flex pt-2 gap-2 px-4">
-                {item.tags.map((tag) => (
-                  <a href={`/tag/${encodeURIComponent(tag)}`} class="text-sm text-gray hover:text-black">
-                    #{tag}
-                  </a>
-                ))}
+        posts.map((item) => {
+          const { day, isSunday } = getDayOfWeek(item.createTime);
+          const dayNum = getDayNumber(item.createTime);
+          return (
+            <a href={`/post/${item.id}`} class="daygram-entry block no-underline">
+              <div class="daygram-entry-date">
+                <span class={`daygram-entry-day ${isSunday ? 'sunday' : ''}`}>{day}</span>
+                <span class="daygram-entry-number">{dayNum}</span>
               </div>
-              <div data-acc-time={item.createTime} class="text-end text-xs text-gray" />
-            </div>
-            <hr />
-          </>
-        ))
+              <div class="daygram-entry-content">
+                <div class="daygram-entry-title">{item.title}</div>
+                <div class="daygram-entry-intro">{item.intro}</div>
+              </div>
+            </a>
+          );
+        })
       }
       <Pagination page={page} pages={pages} />
     </div>
   </main>
+
+  <!-- Daygram-style bottom navigation -->
+  <nav class="daygram-nav">
+    <div class="daygram-nav-left">
+      <div class="daygram-nav-indicator"></div>
+      <span class="daygram-nav-month">
+        {posts.length > 0 ? getMonthName(posts[0].createTime) : 'JANUARY'}
+      </span>
+      <div class="daygram-nav-separator"></div>
+      <span class="daygram-nav-year">
+        {posts.length > 0 ? getYear(posts[0].createTime) : new Date().getFullYear().toString()}
+      </span>
+    </div>
+    <div class="daygram-nav-center">
+      <a href="/edit" class="daygram-nav-plus" aria-label="Add new entry"></a>
+    </div>
+    <div class="daygram-nav-right">
+      <a href="/tag" class="daygram-nav-icon" aria-label="Tags"></a>
+    </div>
+  </nav>
 </Layout>
