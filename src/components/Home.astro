@@ -29,79 +29,13 @@ function getDayNumber(dateStr: Date): string {
   return date.getDate().toString();
 }
 
-// Helper function to get month info
-function getMonthInfo(dateStr: Date): { num: number; name: string } {
-  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+// Current date (always show current month/year)
+const now = new Date();
+const currentMonth = now.getMonth() + 1;
+const currentYear = now.getFullYear();
+const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
                    'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-  const date = new Date(dateStr);
-  return {
-    num: date.getMonth() + 1,
-    name: months[date.getMonth()]
-  };
-}
-
-// Helper function to get year
-function getYearNum(dateStr: Date): number {
-  const date = new Date(dateStr);
-  return date.getFullYear();
-}
-
-// Calculate month range from current page posts
-function getMonthRange(postsList: ShortPageData[]): { display: string; link: string } {
-  if (postsList.length === 0) {
-    const now = new Date();
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
-                   'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    return {
-      display: months[now.getMonth()],
-      link: `/month/${now.getMonth() + 1}`
-    };
-  }
-
-  const months = postsList.map(p => getMonthInfo(p.createTime));
-  const uniqueMonths = [...new Map(months.map(m => [m.num, m])).values()];
-  uniqueMonths.sort((a, b) => a.num - b.num);
-
-  if (uniqueMonths.length === 1) {
-    return {
-      display: uniqueMonths[0].name,
-      link: `/month/${uniqueMonths[0].num}`
-    };
-  } else {
-    return {
-      display: `${uniqueMonths[0].name} - ${uniqueMonths[uniqueMonths.length - 1].name}`,
-      link: `/month/${uniqueMonths[0].num}`
-    };
-  }
-}
-
-// Calculate year range from current page posts
-function getYearRange(postsList: ShortPageData[]): { display: string; link: string } {
-  if (postsList.length === 0) {
-    return {
-      display: new Date().getFullYear().toString(),
-      link: `/year/${new Date().getFullYear()}`
-    };
-  }
-
-  const years = postsList.map(p => getYearNum(p.createTime));
-  const uniqueYears = [...new Set(years)].sort((a, b) => a - b);
-
-  if (uniqueYears.length === 1) {
-    return {
-      display: uniqueYears[0].toString(),
-      link: `/year/${uniqueYears[0]}`
-    };
-  } else {
-    return {
-      display: `${uniqueYears[0]} - ${uniqueYears[uniqueYears.length - 1]}`,
-      link: `/year/${uniqueYears[0]}`
-    };
-  }
-}
-
-const monthRange = getMonthRange(posts);
-const yearRange = getYearRange(posts);
+const currentMonthName = monthNames[now.getMonth()];
 ---
 
 <script>
@@ -139,96 +73,129 @@ const yearRange = getYearRange(posts);
     </div>
   </main>
 
-  <!-- Simple bottom navigation bar -->
-  <nav class="simple-nav">
-    <!-- Month link: shows month range of current page -->
-    <a href={monthRange.link} class="simple-nav-item">
-      {monthRange.display}
+  <!-- Bottom navigation bar -->
+  <nav class="bottom-nav">
+    <a href={`/month/${currentMonth}`} class="nav-item">
+      <span class="nav-label">{currentMonthName}</span>
     </a>
-    <span class="simple-nav-sep">|</span>
-    <!-- Year link: shows year range of current page -->
-    <a href={yearRange.link} class="simple-nav-item">
-      {yearRange.display}
+    
+    <a href={`/year/${currentYear}`} class="nav-item">
+      <span class="nav-label">{currentYear}</span>
     </a>
-    <!-- Add new entry link -->
-    <a href="/edit?new" class="simple-nav-plus">+</a>
-    <!-- Tags link -->
-    <a href="/tag" class="simple-nav-item">Tags</a>
+    
+    <a href="/edit?new" class="nav-plus" aria-label="Add new entry">
+      <span class="plus-icon">+</span>
+    </a>
+    
+    <a href="/tag" class="nav-item">
+      <span class="nav-label">Tags</span>
+    </a>
   </nav>
 </Layout>
 
 <style>
-  .simple-nav {
+  .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 50px;
+    height: 56px;
     background-color: #F2F1ED;
     border-top: 1px solid #504F4B;
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    padding: 0 20px;
+    justify-content: space-evenly;
+    padding: 0;
     z-index: 100;
   }
 
   @media (prefers-color-scheme: dark) {
-    .simple-nav {
+    .bottom-nav {
       background-color: #2A2927;
       border-top-color: #504F4B;
     }
   }
 
-  .simple-nav-item {
-    color: #504F4B;
+  .nav-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
     text-decoration: none;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 10px 15px;
+    color: #504F4B;
+    transition: background-color 0.2s ease;
   }
 
-  .simple-nav-item:hover {
-    opacity: 0.7;
+  .nav-item:hover {
+    background-color: rgba(80, 79, 75, 0.08);
+  }
+
+  .nav-item:active {
+    background-color: rgba(80, 79, 75, 0.15);
   }
 
   @media (prefers-color-scheme: dark) {
-    .simple-nav-item {
+    .nav-item {
       color: #E8E6E1;
     }
-  }
-
-  .simple-nav-sep {
-    color: #504F4B;
-    font-size: 14px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .simple-nav-sep {
-      color: #504F4B;
+    .nav-item:hover {
+      background-color: rgba(232, 230, 225, 0.08);
+    }
+    .nav-item:active {
+      background-color: rgba(232, 230, 225, 0.15);
     }
   }
 
-  .simple-nav-plus {
-    width: 40px;
-    height: 40px;
+  .nav-label {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-plus {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+
+  .nav-plus:hover {
+    background-color: rgba(80, 79, 75, 0.08);
+  }
+
+  .nav-plus:active {
+    background-color: rgba(80, 79, 75, 0.15);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .nav-plus:hover {
+      background-color: rgba(232, 230, 225, 0.08);
+    }
+    .nav-plus:active {
+      background-color: rgba(232, 230, 225, 0.15);
+    }
+  }
+
+  .plus-icon {
+    width: 36px;
+    height: 36px;
     background-color: #504F4B;
     color: #F2F1ED;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
     font-size: 24px;
-    font-weight: bold;
-  }
-
-  .simple-nav-plus:hover {
-    opacity: 0.8;
+    font-weight: 300;
+    line-height: 1;
   }
 
   @media (prefers-color-scheme: dark) {
-    .simple-nav-plus {
+    .plus-icon {
       background-color: #E8E6E1;
       color: #2A2927;
     }
