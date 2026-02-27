@@ -1,18 +1,18 @@
 export const config = {
   github: {
-    login: "glink25", // github login name, not user name
-    repo: "test-for-anything", //"urodele",
+    login: "mydaygram", // github login name, not user name
+    repo: "mydaygram.github.io", //"urodele",
     logInUrl: "",
     logInAuthUrl: "",
   },
   head: {
-    title: "Urodele",
-    brand: "Urodele",
-    description: "A self-owned full-static blog system",
+    title: "Daygram",
+    brand: "Daygram",
+    description: "One line a day",
   },
   footer: {
-    copyright: "© Glink",
-    copyrightUrl: "https://github.com/glink25",
+    copyright: "© Daygram",
+    copyrightUrl: "https://mydaygram.github.io",
   },
   pagination: {
     size: 10,
