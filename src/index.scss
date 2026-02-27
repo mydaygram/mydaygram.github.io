@@ -1,14 +1,38 @@
 html {
-    scroll-behavior: smooth
+    scroll-behavior: smooth;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Daygram-style body */
+body {
+    background-color: #F2F1ED;
+    color: #504F4B;
+    min-height: 100vh;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #2A2927;
+        color: #E8E6E1;
+    }
 }
 
 header {
     position: sticky;
     top: 0;
     z-index: 20;
-    @apply bg-bg;
+    background-color: #F2F1ED;
+    border-bottom: 1px solid #504F4B;
 }
 
+@media (prefers-color-scheme: dark) {
+    header {
+        background-color: #2A2927;
+        border-bottom-color: #504F4B;
+    }
+}
+
+/* Daygram-style scrollbar */
 ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -23,19 +47,36 @@ header {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.28);
+    background-color: #BAB7A9;
     border-radius: 5px;
 }
 
 @media (prefers-color-scheme: dark) {
-    hr {
-        border-color: rgb(119, 119, 119)
+    ::-webkit-scrollbar-thumb {
+        background-color: #504F4B;
     }
 }
 
-// button
+hr {
+    border-color: #504F4B;
+    border-style: solid;
+    border-width: 1px 0 0 0;
+    margin: 0;
+    padding: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+    hr {
+        border-color: #504F4B;
+    }
+}
+
+/* Daygram-style button */
 .buttoned {
     @apply px-2 py-1 rounded flex items-center justify-center gap-2 transition-all;
+    background-color: transparent;
+    color: #504F4B;
+    border: 1px solid #504F4B;
 
     &:disabled {
         @apply opacity-50 cursor-not-allowed;
@@ -43,11 +84,12 @@ header {
 
     &:not(:disabled) {
         &:active {
-            @apply brightness-90;
+            background-color: #504F4B;
+            color: #F2F1ED;
         }
 
         &:not(:active):hover {
-            @apply brightness-95;
+            background-color: rgba(80, 79, 75, 0.1);
         }
     }
 
@@ -71,21 +113,36 @@ header {
 
 .text-button {
     @apply px-2 py-1 rounded flex items-center justify-center gap-2 transition-all;
-    @apply hover:(bg-black bg-opacity-10) active:(bg-black bg-opacity-20);
+    color: #504F4B;
+    @apply hover:(bg-black bg-opacity-5) active:(bg-black bg-opacity-10);
 }
 
-// loading
+@media (prefers-color-scheme: dark) {
+    .text-button {
+        color: #E8E6E1;
+        @apply hover:(bg-white bg-opacity-5) active:(bg-white bg-opacity-10);
+    }
+}
+
+/* loading */
 div[data-modal-loading] {
     position: relative;
 
     &::before {
-        @apply absolute w-full h-full top-0 left-0 bg-bg bg-opacity-80;
+        @apply absolute w-full h-full top-0 left-0 bg-opacity-80;
         content: '';
+        background-color: #F2F1ED;
         background-size: 24px;
         background-image: icon('i-svg-spinners:ring-resize');
         background-position: center;
         background-repeat: no-repeat;
         pointer-events: all;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    div[data-modal-loading]::before {
+        background-color: #2A2927;
     }
 }
 
@@ -95,7 +152,7 @@ div[data-modal-loading="false"] {
     }
 }
 
-// transition
+/* transition */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.25s ease;
@@ -106,7 +163,7 @@ div[data-modal-loading="false"] {
     opacity: 0;
 }
 
-// page
+/* page */
 [data-page-draft]:not([data-page-draft="verified"]) {
     display: none;
     visibility: hidden;
@@ -119,6 +176,285 @@ div[data-modal-loading="false"] {
 
     .page-title::after {
         content: 'draft';
-        @apply bg-yellow-200 dark:bg-yellow rounded mx-1 px-2 py-1 text-xs align-super;
+        background-color: #A84545;
+        color: #FFFFFF;
+        @apply rounded mx-1 px-2 py-1 text-xs align-super;
+    }
+}
+
+/* Daygram-style entry card */
+.daygram-entry {
+    border: 1px solid #504F4B;
+    background-color: transparent;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    min-height: 68px;
+    transition: background-color 0.2s ease;
+}
+
+.daygram-entry:hover {
+    background-color: rgba(80, 79, 75, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-entry:hover {
+        background-color: rgba(232, 230, 225, 0.05);
+    }
+}
+
+.daygram-entry-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #504F4B;
+    padding: 4px 12px;
+    min-width: 60px;
+}
+
+.daygram-entry-day {
+    font-size: 12px;
+    font-weight: normal;
+    color: #504F4B;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.daygram-entry-day.sunday {
+    color: #A84545;
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-entry-day {
+        color: #E8E6E1;
+    }
+    .daygram-entry-day.sunday {
+        color: #A84545;
+    }
+}
+
+.daygram-entry-number {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #504F4B;
+    line-height: 1.2;
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-entry-number {
+        color: #E8E6E1;
+    }
+}
+
+.daygram-entry-content {
+    flex: 1;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.daygram-entry-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #504F4B;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-entry-title {
+        color: #E8E6E1;
+    }
+}
+
+.daygram-entry-intro {
+    font-size: 13px;
+    color: #A6A6A2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Daygram-style month selector */
+.month-selector {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px;
+}
+
+.month-item {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #A6A6A2;
+    color: #A6A6A2;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.month-item:hover {
+    border-color: #504F4B;
+    color: #504F4B;
+}
+
+.month-item.active {
+    background-color: #504F4B;
+    border-color: #504F4B;
+    color: #F2F1ED;
+}
+
+@media (prefers-color-scheme: dark) {
+    .month-item {
+        border-color: #504F4B;
+        color: #A6A6A2;
+    }
+    .month-item:hover {
+        border-color: #E8E6E1;
+        color: #E8E6E1;
+    }
+    .month-item.active {
+        background-color: #E8E6E1;
+        border-color: #E8E6E1;
+        color: #2A2927;
+    }
+}
+
+/* Daygram-style bottom navigation */
+.daygram-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #F2F1ED;
+    border-top: 1px solid #504F4B;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 100;
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-nav {
+        background-color: #2A2927;
+        border-top-color: #504F4B;
+    }
+}
+
+.daygram-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.daygram-nav-indicator {
+    width: 5px;
+    height: 14px;
+    background-color: #504F4B;
+}
+
+.daygram-nav-month {
+    font-size: 16px;
+    font-weight: bold;
+    color: #504F4B;
+    text-transform: uppercase;
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-nav-month {
+        color: #E8E6E1;
+    }
+}
+
+.daygram-nav-separator {
+    width: 1px;
+    height: 14px;
+    background-color: #504F4B;
+}
+
+.daygram-nav-year {
+    font-size: 16px;
+    font-weight: bold;
+    color: #504F4B;
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-nav-year {
+        color: #E8E6E1;
+    }
+}
+
+.daygram-nav-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.daygram-nav-plus {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.daygram-nav-plus::before,
+.daygram-nav-plus::after {
+    content: '';
+    position: absolute;
+    background-color: #504F4B;
+    border-radius: 2px;
+}
+
+.daygram-nav-plus::before {
+    width: 3px;
+    height: 14px;
+}
+
+.daygram-nav-plus::after {
+    width: 14px;
+    height: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-nav-plus::before,
+    .daygram-nav-plus::after {
+        background-color: #E8E6E1;
+    }
+}
+
+.daygram-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.daygram-nav-icon {
+    width: 24px;
+    height: 14px;
+    border: 1px solid #504F4B;
+    cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+    .daygram-nav-icon {
+        border-color: #E8E6E1;
     }
 }
