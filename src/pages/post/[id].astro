@@ -12,6 +12,24 @@ const curIndex = allPosts.findIndex((p) => p.id === post.id);
 const prev = allPosts[curIndex + 1];
 const next = allPosts[curIndex - 1];
 
+// Helper functions for Daygram-style date display
+function getDayOfWeek(dateStr: Date): { day: string; isSunday: boolean } {
+  const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  const date = new Date(dateStr);
+  const dayIndex = date.getDay();
+  return {
+    day: days[dayIndex],
+    isSunday: dayIndex === 0
+  };
+}
+
+function getFormattedDate(dateStr: Date): string {
+  const date = new Date(dateStr);
+  const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
+                   'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
 export const getStaticPaths = async () => {
   const posts = await getPageList(false);
   return posts.map((p) => ({
@@ -20,6 +38,8 @@ export const getStaticPaths = async () => {
     },
   }));
 };
+
+const { day, isSunday } = getDayOfWeek(post.createTime);
 ---
 
 <script>
@@ -33,24 +53,40 @@ export const getStaticPaths = async () => {
 <Layout title={post.title} description={post.intro}>
   <main>
     <div class="content">
-      <div class="w-full flex gap-2 pb-2">
-        {post.draft && <div class="rounded px-3 py-1 bg-yellow-200 dark:bg-yellow">draft</div>}
+      <!-- Daygram-style entry header -->
+      <div class="daygram-post-header">
+        <div class="daygram-post-day" class:list={[isSunday ? 'sunday' : '']}>
+          {day}
+        </div>
+        <div class="daygram-post-date">
+          {getFormattedDate(post.createTime)}
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="flex gap-2 py-4 flex-wrap">
+        {post.draft && <div class="rounded px-3 py-1" style="background-color: #A84545; color: #FFFFFF;">draft</div>}
         {
           post.tags.map((tag) => (
             <a
               href={`/tag/${encodeURIComponent(tag)}`}
-              class="rounded hover:bg-gray-200 dark:hover:bg-modal px-3 py-1 cursor-pointer">
+              class="rounded px-3 py-1 cursor-pointer no-underline"
+              style="border: 1px solid #504F4B; color: #504F4B;"
+            >
               #{tag}
             </a>
           ))
         }
       </div>
+
+      <!-- Content -->
       <div class="ud-root read-only flex-1" set:html={post.html} />
 
+      <!-- Navigation -->
       <div data-page-id={post.id} class="navigator flex justify-between items-center mt-4 py-4">
         {
           prev ? (
-            <a href={`/post/${prev.id}`} class="flex items-center gap-1 text-blue cursor-pointer flex-[45%]">
+            <a href={`/post/${prev.id}`} class="flex items-center gap-1 cursor-pointer flex-[45%] no-underline" style="color: #A84545;">
               <div class="i-ri:arrow-left-double-line w-5 h-5 flex-shrink-0" />
               <div class="text-start">{prev.title}</div>
             </a>
@@ -62,7 +98,9 @@ export const getStaticPaths = async () => {
           next ? (
             <a
               href={`/post/${next.id}`}
-              class="flex items-center justify-end gap-1 text-blue cursor-pointer flex-[45%]">
+              class="flex items-center justify-end gap-1 cursor-pointer flex-[45%] no-underline"
+              style="color: #A84545;"
+            >
               <div class="text-end">{next.title}</div>
               <div class="i-ri:arrow-right-double-line w-5 h-5 flex-shrink-0" />
             </a>
@@ -84,3 +122,42 @@ export const getStaticPaths = async () => {
     )
   }
 </Layout>
+
+<style>
+  .daygram-post-header {
+    border: 1px solid #504F4B;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .daygram-post-day {
+    font-size: 14px;
+    font-weight: bold;
+    color: #504F4B;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .daygram-post-day.sunday {
+    color: #A84545;
+  }
+
+  .daygram-post-date {
+    font-size: 12px;
+    color: #A6A6A2;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .daygram-post-header {
+      border-color: #504F4B;
+    }
+
+    .daygram-post-day {
+      color: #E8E6E1;
+    }
+
+    .daygram-post-day.sunday {
+      color: #A84545;
+    }
+  }
+</style>
