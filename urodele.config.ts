@@ -7,7 +7,7 @@ export const config = {
   },
   head: {
     title: "Daygram",
-    brand: "Daygram",
+    brand: "Daygram ",
     description: "One line a day",
   },
   footer: {
