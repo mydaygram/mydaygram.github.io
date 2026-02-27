@@ -31,10 +31,16 @@ function getDayNumber(dateStr: Date): string {
 
 // Helper function to get month name
 function getMonthName(dateStr: Date): string {
-  const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
-                   'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+                   'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
   const date = new Date(dateStr);
   return months[date.getMonth()];
+}
+
+// Helper function to get month number (1-12)
+function getMonthNumber(dateStr: Date): number {
+  const date = new Date(dateStr);
+  return date.getMonth() + 1;
 }
 
 // Helper function to get year
@@ -42,6 +48,13 @@ function getYear(dateStr: Date): string {
   const date = new Date(dateStr);
   return date.getFullYear().toString();
 }
+
+// Current date info
+const now = new Date();
+const currentMonthName = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+                          'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][now.getMonth()];
+const currentMonth = now.getMonth() + 1;
+const currentYear = now.getFullYear();
 ---
 
 <script>
@@ -79,23 +92,98 @@ function getYear(dateStr: Date): string {
     </div>
   </main>
 
-  <!-- Daygram-style bottom navigation -->
-  <nav class="daygram-nav">
-    <div class="daygram-nav-left">
-      <div class="daygram-nav-indicator"></div>
-      <span class="daygram-nav-month">
-        {posts.length > 0 ? getMonthName(posts[0].createTime) : 'JANUARY'}
-      </span>
-      <div class="daygram-nav-separator"></div>
-      <span class="daygram-nav-year">
-        {posts.length > 0 ? getYear(posts[0].createTime) : new Date().getFullYear().toString()}
-      </span>
-    </div>
-    <div class="daygram-nav-center">
-      <a href="/edit" class="daygram-nav-plus" aria-label="Add new entry"></a>
-    </div>
-    <div class="daygram-nav-right">
-      <a href="/tag" class="daygram-nav-icon" aria-label="Tags"></a>
-    </div>
+  <!-- Simple bottom navigation bar -->
+  <nav class="simple-nav">
+    <!-- Month link: shows posts from that month -->
+    <a href={`/month/${posts.length > 0 ? getMonthNumber(posts[0].createTime) : currentMonth}`} class="simple-nav-item">
+      {posts.length > 0 ? getMonthName(posts[0].createTime) : currentMonthName}
+    </a>
+    <span class="simple-nav-sep">|</span>
+    <!-- Year link: shows posts from that year -->
+    <a href={`/year/${posts.length > 0 ? getYear(posts[0].createTime) : currentYear}`} class="simple-nav-item">
+      {posts.length > 0 ? getYear(posts[0].createTime) : currentYear}
+    </a>
+    <!-- Add new entry link -->
+    <a href="/edit?new" class="simple-nav-plus">+</a>
+    <!-- Tags link -->
+    <a href="/tag" class="simple-nav-item">Tags</a>
   </nav>
 </Layout>
+
+<style>
+  .simple-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: #F2F1ED;
+    border-top: 1px solid #504F4B;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 20px;
+    z-index: 100;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .simple-nav {
+      background-color: #2A2927;
+      border-top-color: #504F4B;
+    }
+  }
+
+  .simple-nav-item {
+    color: #504F4B;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 15px;
+  }
+
+  .simple-nav-item:hover {
+    opacity: 0.7;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .simple-nav-item {
+      color: #E8E6E1;
+    }
+  }
+
+  .simple-nav-sep {
+    color: #504F4B;
+    font-size: 14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .simple-nav-sep {
+      color: #504F4B;
+    }
+  }
+
+  .simple-nav-plus {
+    width: 40px;
+    height: 40px;
+    background-color: #504F4B;
+    color: #F2F1ED;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .simple-nav-plus:hover {
+    opacity: 0.8;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .simple-nav-plus {
+      background-color: #E8E6E1;
+      color: #2A2927;
+    }
+  }
+</style>
