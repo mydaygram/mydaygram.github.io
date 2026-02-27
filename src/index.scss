@@ -3,31 +3,22 @@ html {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Daygram-style body */
+/* Daygram-style body - using @apply for theme colors */
 body {
-    background-color: #F2F1ED;
-    color: #504F4B;
+    @apply text-text bg-bg;
     min-height: 100vh;
-}
-
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: #2A2927;
-        color: #E8E6E1;
-    }
 }
 
 header {
     position: sticky;
     top: 0;
     z-index: 20;
-    background-color: #F2F1ED;
+    @apply bg-bg;
     border-bottom: 1px solid #504F4B;
 }
 
 @media (prefers-color-scheme: dark) {
     header {
-        background-color: #2A2927;
         border-bottom-color: #504F4B;
     }
 }
@@ -67,16 +58,13 @@ hr {
 
 @media (prefers-color-scheme: dark) {
     hr {
-        border-color: #504F4B;
+        border-color: rgb(119, 119, 119);
     }
 }
 
-/* Daygram-style button */
+// button - Keep original @apply directives
 .buttoned {
     @apply px-2 py-1 rounded flex items-center justify-center gap-2 transition-all;
-    background-color: transparent;
-    color: #504F4B;
-    border: 1px solid #504F4B;
 
     &:disabled {
         @apply opacity-50 cursor-not-allowed;
@@ -84,12 +72,11 @@ hr {
 
     &:not(:disabled) {
         &:active {
-            background-color: #504F4B;
-            color: #F2F1ED;
+            @apply brightness-90;
         }
 
         &:not(:active):hover {
-            background-color: rgba(80, 79, 75, 0.1);
+            @apply brightness-95;
         }
     }
 
@@ -113,36 +100,21 @@ hr {
 
 .text-button {
     @apply px-2 py-1 rounded flex items-center justify-center gap-2 transition-all;
-    color: #504F4B;
-    @apply hover:(bg-black bg-opacity-5) active:(bg-black bg-opacity-10);
+    @apply hover:(bg-black bg-opacity-10) active:(bg-black bg-opacity-20);
 }
 
-@media (prefers-color-scheme: dark) {
-    .text-button {
-        color: #E8E6E1;
-        @apply hover:(bg-white bg-opacity-5) active:(bg-white bg-opacity-10);
-    }
-}
-
-/* loading */
+// loading - Keep original @apply directives
 div[data-modal-loading] {
     position: relative;
 
     &::before {
-        @apply absolute w-full h-full top-0 left-0 bg-opacity-80;
+        @apply absolute w-full h-full top-0 left-0 bg-bg bg-opacity-80;
         content: '';
-        background-color: #F2F1ED;
         background-size: 24px;
         background-image: icon('i-svg-spinners:ring-resize');
         background-position: center;
         background-repeat: no-repeat;
         pointer-events: all;
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    div[data-modal-loading]::before {
-        background-color: #2A2927;
     }
 }
 
@@ -152,7 +124,7 @@ div[data-modal-loading="false"] {
     }
 }
 
-/* transition */
+// transition
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.25s ease;
@@ -163,7 +135,7 @@ div[data-modal-loading="false"] {
     opacity: 0;
 }
 
-/* page */
+// page
 [data-page-draft]:not([data-page-draft="verified"]) {
     display: none;
     visibility: hidden;
@@ -176,9 +148,7 @@ div[data-modal-loading="false"] {
 
     .page-title::after {
         content: 'draft';
-        background-color: #A84545;
-        color: #FFFFFF;
-        @apply rounded mx-1 px-2 py-1 text-xs align-super;
+        @apply bg-yellow-200 dark:bg-yellow rounded mx-1 px-2 py-1 text-xs align-super;
     }
 }
 
@@ -191,6 +161,7 @@ div[data-modal-loading="false"] {
     flex-direction: row;
     min-height: 68px;
     transition: background-color 0.2s ease;
+    text-decoration: none;
 }
 
 .daygram-entry:hover {
@@ -413,6 +384,7 @@ div[data-modal-loading="false"] {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .daygram-nav-plus::before,
