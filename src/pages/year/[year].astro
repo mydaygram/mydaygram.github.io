@@ -1,0 +1,212 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getPageList } from "@/pages/api/post/list";
+
+const year = Number((Astro.params as any).year);
+const monthFilter = Astro.url.searchParams.get('month');
+
+const all = await getPageList();
+let posts = all.filter((v) => {
+  const date = new Date(v.createTime);
+  return date.getFullYear() === year;
+});
+
+// If month filter is set, filter by month too
+if (monthFilter) {
+  const monthNum = parseInt(monthFilter);
+  posts = posts.filter((v) => {
+    const date = new Date(v.createTime);
+    return date.getMonth() + 1 === monthNum;
+  });
+}
+
+// Get months that have posts in this year
+const monthsWithPosts = [...new Set(
+  all
+    .filter(p => new Date(p.createTime).getFullYear() === year)
+    .map(p => new Date(p.createTime).getMonth() + 1)
+)].sort((a, b) => a - b);
+
+const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
+                   'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+const monthNamesShort = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+                          'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+export const getStaticPaths = async () => {
+  const all = await getPageList();
+  const years = new Set<number>();
+  all.forEach(p => {
+    const date = new Date(p.createTime);
+    years.add(date.getFullYear());
+  });
+  return Array.from(years).map((y) => ({
+    params: {
+      year: y.toString(),
+    },
+  }));
+};
+
+// Helper function to get day of week
+function getDayOfWeek(dateStr: Date): { day: string; isSunday: boolean } {
+  const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const date = new Date(dateStr);
+  const dayIndex = date.getDay();
+  return {
+    day: days[dayIndex],
+    isSunday: dayIndex === 0
+  };
+}
+
+function getDayNumber(dateStr: Date): string {
+  const date = new Date(dateStr);
+  return date.getDate().toString();
+}
+
+function getMonthName(dateStr: Date): string {
+  const date = new Date(dateStr);
+  return monthNamesShort[date.getMonth()];
+}
+---
+
+<script>
+  import { mount } from "@/components/RelativeTime";
+  mount("data-acc-time");
+</script>
+
+<Layout title={year.toString()}>
+  <main>
+    <div class="content">
+      <!-- Year header -->
+      <div class="year-header">
+        <a href="/" class="back-link">← Back</a>
+        <h1 class="year-title">{year}</h1>
+        <div class="post-count">{posts.length} posts</div>
+      </div>
+
+      <!-- Month filter -->
+      <div class="month-filter">
+        <a href={`/year/${year}`} class={`month-item ${!monthFilter ? 'active' : ''}`}>
+          All
+        </a>
+        {monthsWithPosts.map((m) => (
+          <a href={`/year/${year}?month=${m}`} class={`month-item ${monthFilter === m.toString() ? 'active' : ''}`}>
+            {monthNamesShort[m - 1]}
+          </a>
+        ))}
+      </div>
+
+      <!-- Posts list -->
+      {
+        posts.map((item) => {
+          const { day, isSunday } = getDayOfWeek(item.createTime);
+          const dayNum = getDayNumber(item.createTime);
+          const monthName = getMonthName(item.createTime);
+          return (
+            <a href={`/post/${item.id}`} class="daygram-entry block no-underline">
+              <div class="daygram-entry-date">
+                <span class={`daygram-entry-day ${isSunday ? 'sunday' : ''}`}>{day}</span>
+                <span class="daygram-entry-number">{dayNum}</span>
+              </div>
+              <div class="daygram-entry-content">
+                <div class="daygram-entry-title">{item.title}</div>
+                <div class="daygram-entry-intro">{item.intro}</div>
+                {!monthFilter && <div class="daygram-entry-month">{monthName}</div>}
+              </div>
+            </a>
+          );
+        })
+      }
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .year-header {
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 1px solid #504F4B;
+    margin-bottom: 20px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #504F4B;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .back-link {
+      color: #E8E6E1;
+    }
+  }
+
+  .year-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #504F4B;
+    margin: 0 0 5px 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .year-title {
+      color: #E8E6E1;
+    }
+  }
+
+  .post-count {
+    font-size: 14px;
+    color: #A6A6A2;
+  }
+
+  .month-filter {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .month-item {
+    padding: 5px 12px;
+    border: 1px solid #504F4B;
+    border-radius: 20px;
+    color: #504F4B;
+    text-decoration: none;
+    font-size: 12px;
+  }
+
+  .month-item:hover {
+    background-color: rgba(80, 79, 75, 0.1);
+  }
+
+  .month-item.active {
+    background-color: #504F4B;
+    color: #F2F1ED;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .month-item {
+      color: #E8E6E1;
+      border-color: #504F4B;
+    }
+    .month-item:hover {
+      background-color: rgba(232, 230, 225, 0.1);
+    }
+    .month-item.active {
+      background-color: #E8E6E1;
+      color: #2A2927;
+    }
+  }
+
+  .daygram-entry-month {
+    font-size: 11px;
+    color: #A84545;
+    margin-top: 2px;
+  }
+</style>
